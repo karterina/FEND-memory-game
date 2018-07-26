@@ -32,7 +32,8 @@ let moves = 0;
 // initializing new field
 newGame();
 
-// //restarting the game when clicking restart button
+
+//restarting the game when clicking restart button
 const button = document.querySelector('.fa-repeat')
 button.addEventListener('click', function() {
   newGame();
@@ -54,8 +55,8 @@ function shuffle(array) {
 
     return array;
 }
+
 // creating a card and adding it to the page
-// maybe adding should be in another function??
 function createCard(cardClass) {
   newCard = document.createElement('li');
   newCard.className = 'card';
@@ -64,35 +65,67 @@ function createCard(cardClass) {
 };
 
 // creating new game field
-// to shuffle cards need to call newField(shuffle(allCards))
 function newField(array) {
   for (i = 0; i < array.length; i++) {
     createCard(array[i]);
   };
 }
 
+//creating starting point for the game
 function newGame() {
   deck.innerHTML = '';
   newField(shuffle(allCards));
+  moves = 0;
 }
 
-
-// cards returns not an iterable object
-// supposed to open cards at click event
-// let cards = document.querySelector('.card');
-// card.addEventListener('click', e => {
-//     card.classList.toggle('open');
-//     card.classList.toggle('show');
-//   });
-
+// showing cards on click
+// based on https://matthewcranford.com/memory-game-walkthrough-part-2-toggling-cards/
 deck.addEventListener('click', e => {
   const clickTarget = e.target;
   if (clickTarget.classList.contains('card')) {
-    clickTarget.classList.toggle('open');
-    clickTarget.classList.toggle('show');
+    clickTarget.classList.add('open', 'show');
   }
-})
+  // placing clicked cards in an array to check if they match
+  openCards.push(clickTarget);
+  // calling match function if array has 2 cards
+  if (openCards.length === 2) {
+    match(openCards);
+  };
+  // counting moves: 0.5 because clicking 2 cards chould be 1 move
+  moves += 0.5;
+  // is this a good place??
+  updateMoves(moves);
+});
 
+// checking for a match when 2 cards are clicked
+// maybe place match() function somewhere else???
+// function checkForMatch(num) {
+//   if (num % 2 !== 0) {
+//     match(openCards)
+//   };
+// };
+
+// checking for a match
+function match(array) {
+  if (array[0].firstElementChild.classList.value === array[1].firstElementChild.classList.value) {
+    array[0].classList.add('match');
+    array[1].classList.add('match');
+    array.length = 0;
+  } else {
+    // setTimeout to give a card time to be seen by the user
+      setTimeout(() => {
+        array[0].classList.remove('open', 'show');
+        array[1].classList.remove('open', 'show');
+        array.length = 0;
+      }, 700);
+    };
+}
+
+// updating moves count on the page
+function updateMoves(num) {
+  var movesCount = document.querySelector('.moves');
+  movesCount.textContent = num;
+}
 
 // TODO:
 // - creating a field with new shuffled cards DONE
@@ -100,12 +133,16 @@ deck.addEventListener('click', e => {
 //     * new field DONE
 //     * reset moves
 //     * reset stars
-// - showing cards upon click
-// - checking if two clicked cards match
-// - if yes, lock them in open position, if no, hide them
+// - showing cards upon click DONE
+// - checking if two clicked cards match DONE
+// - if yes, lock them in open position, if no, hide them DONE
 // - counting moves
 // - star rating according to the number of Moves
 // - some kind of indication of losing/winning
+
+// THOUGHTS:
+// - prevent being able to click again on already opened card
+// and increment moves and add classes again, it breaks everything
 
 
 
