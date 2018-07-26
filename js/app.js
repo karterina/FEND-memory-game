@@ -33,12 +33,12 @@ let moves = 0;
 newGame();
 
 // //restarting the game when clicking restart button
-// const button = document.querySelector('.fa-repeat')
-// // button.addEventListener('click', function(){
-// //   console.log('hey');
-// // });
-// button.onclick = newGame;
-// alert('New game!');
+const button = document.querySelector('.fa-repeat')
+button.addEventListener('click', function() {
+  newGame();
+  alert('New game!');
+});
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -85,10 +85,21 @@ function newGame() {
 //     card.classList.toggle('show');
 //   });
 
+deck.addEventListener('click', e => {
+  const clickTarget = e.target;
+  if (clickTarget.classList.contains('card')) {
+    clickTarget.classList.toggle('open');
+    clickTarget.classList.toggle('show');
+  }
+})
+
 
 // TODO:
 // - creating a field with new shuffled cards DONE
 // - restarting upon clicking restart button
+//     * new field DONE
+//     * reset moves
+//     * reset stars
 // - showing cards upon click
 // - checking if two clicked cards match
 // - if yes, lock them in open position, if no, hide them
