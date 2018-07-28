@@ -1,20 +1,13 @@
 # Memory Game Project
 
-## Table of Contents
+This project is a part of Udacity Front End Developer Nanodegree.
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+## Setup
 
-## Instructions
+1. Download or clone this repository to your local machine.
+2. Open index.html file in a browser of your choice.
+3. Enjoy!
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+## How to play
 
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
-
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+This is a concentration game. Game field contains 16 cards: 2 of each of 8 different types. The player clicks on 2 cards to see if they match. Clicking two cards is 1 move - the more moves the player makes, the less stars the player gets. The game ends when all the cards in the field are matched. The ultimate goal is to find all matching cards in the least amount of moves.
