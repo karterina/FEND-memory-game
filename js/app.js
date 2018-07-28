@@ -19,8 +19,10 @@ let allCards = ['fa-diamond',
   'fa-bomb'
 ];
 const deck = document.querySelector('.deck');
+movesCount = document.querySelector('.moves');
 let openCards = [];
 let moves = 0;
+let matchedCards = [];
 
 /*
  * Display the cards on the page
@@ -29,7 +31,7 @@ let moves = 0;
  *   - add each card's HTML to the page
  */
 
-// initializing new field
+// initializing new game
 newGame();
 
 
@@ -64,6 +66,7 @@ function createCard(cardClass) {
   deck.appendChild(newCard);
 };
 
+
 // creating new game field
 function newField(array) {
   for (i = 0; i < array.length; i++) {
@@ -75,41 +78,43 @@ function newField(array) {
 function newGame() {
   deck.innerHTML = '';
   newField(shuffle(allCards));
-  moves = 0;
+  movesStart();
+  newStars();
+  matchedCards = [];
 }
 
 // showing cards on click
 // based on https://matthewcranford.com/memory-game-walkthrough-part-2-toggling-cards/
-deck.addEventListener('click', e => {
+deck.addEventListener('click', function(e) {
   const clickTarget = e.target;
-  if (clickTarget.classList.contains('card')) {
-    clickTarget.classList.add('open', 'show');
+  if (clickTarget.classList.contains('card')
+  && openCards.length < 2
+  && !clickTarget.classList.contains('match')
+  && clickTarget.classList.contains('card')
+  && !openCards.includes(clickTarget)) {
+    clickTarget.classList.toggle('open');
+    clickTarget.classList.toggle('show');
+   // placing clicked cards in an array to check if they match
+    openCards.push(clickTarget);
   }
-  // placing clicked cards in an array to check if they match
-  openCards.push(clickTarget);
   // calling match function if array has 2 cards
   if (openCards.length === 2) {
     match(openCards);
-  };
-  // counting moves: 0.5 because clicking 2 cards chould be 1 move
-  moves += 0.5;
-  // is this a good place??
-  updateMoves(moves);
+    updateMoves();
+    evalMoves();
+  }
 });
 
-// checking for a match when 2 cards are clicked
-// maybe place match() function somewhere else???
-// function checkForMatch(num) {
-//   if (num % 2 !== 0) {
-//     match(openCards)
-//   };
-// };
 
 // checking for a match
 function match(array) {
-  if (array[0].firstElementChild.classList.value === array[1].firstElementChild.classList.value) {
-    array[0].classList.add('match');
-    array[1].classList.add('match');
+  if (array[0].firstElementChild.classList.value === array[1].firstElementChild.classList.value
+  && !matchedCards.includes(array[0])
+  && !matchedCards.includes(array[1])) {
+    array[0].classList.toggle('match');
+    array[1].classList.toggle('match');
+    matchedCards.push(array[0]);
+    matchedCards.push(array[1]);
     array.length = 0;
   } else {
     // setTimeout to give a card time to be seen by the user
@@ -117,42 +122,61 @@ function match(array) {
         array[0].classList.remove('open', 'show');
         array[1].classList.remove('open', 'show');
         array.length = 0;
-      }, 700);
+      }, 500);
     };
+  setTimeout(() => {
+    win(matchedCards, moves);
+  }, 500);
 }
+
 
 // updating moves count on the page
-function updateMoves(num) {
-  var movesCount = document.querySelector('.moves');
-  movesCount.textContent = num;
+function updateMoves() {
+  moves++;
+  movesCount.textContent = moves;
 }
 
-// TODO:
-// - creating a field with new shuffled cards DONE
-// - restarting upon clicking restart button
-//     * new field DONE
-//     * reset moves
-//     * reset stars
-// - showing cards upon click DONE
-// - checking if two clicked cards match DONE
-// - if yes, lock them in open position, if no, hide them DONE
-// - counting moves
-// - star rating according to the number of Moves
-// - some kind of indication of losing/winning
+//evaluating the number of moves to check if removing a star is needed
+function evalMoves() {
+  if (moves === 15 || moves === 22) {
+    removeStar();
+  }
+}
 
-// THOUGHTS:
-// - prevent being able to click again on already opened card
-// and increment moves and add classes again, it breaks everything
+function movesStart() {
+  movesCount.textContent = 0;
+}
 
+// hiding a star at a certain move count
+function removeStar() {
+  const stars = document.querySelectorAll('.fa-star');
+  for (star of stars) {
+    if (star.style.display !== 'none') {
+      star.style.display ='none';
+      break;
+    }
+  }
+}
 
+// setting stars at reload/new game
+function newStars() {
+  const stars = document.querySelectorAll('.fa-star');
+  for (star of stars) {
+    if (star.style.display == 'none') {
+      star.style.display = null;
+    }
+  }
+}
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+// winning
+function win(array, numMoves) {
+  if (array.length === 16) {
+    if (numMoves <= 15) {
+      alert(`You have won in ${numMoves} moves! That's 3 stars! Awesome!`);
+    } else if (numMoves <= 22) {
+      alert(`You have won in ${numMoves} moves! That's 2 stars! Cool!`);
+    } else {
+      alert(`You have won in ${numMoves} moves! That's 1 star! Maybe try harder next time?`);
+    }
+  }
+}
