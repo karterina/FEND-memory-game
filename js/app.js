@@ -17,23 +17,59 @@ let allCards = ['fa-diamond',
   'fa-bomb'
 ];
 
+//global variables
 const deck = document.querySelector('.deck');
 movesCount = document.querySelector('.moves');
 let openCards = [];
 let moves = 0;
 let matchedCards = [];
 let time = 0;
+let timerPanel = document.querySelector('.timer-panel')
+let timerOff = true;
+let timerID;
+
 
 // initializing new game
 newGame();
 
+
 //restarting the game when clicking restart button
 const button = document.querySelector('.fa-repeat')
 button.addEventListener('click', function() {
-  newGame();
   alert('New game!');
+  newGame();
 });
 
+// init timer
+function startTimer() {
+  time = 0;
+  timerID = setInterval( function() {
+    time++;
+    updateTimer();
+  }, 1000);
+}
+
+// update timer panel
+function updateTimer() {
+  const timerPanel = document.querySelector('.timer-panel');
+  timeFormatted(timerPanel);
+}
+
+// formatting time in seconds to time in min:sec
+function timeFormatted(elem) {
+  let minutes = Math.floor(time / 60);
+  let seconds = time % 60;
+  if (seconds < 10) {
+    elem.textContent = `Time: ${minutes}:0${seconds}`
+  } else {
+    elem.textContent = `Time: ${minutes}:${seconds}`
+  }
+}
+
+// stopping the timer
+function clearTimer() {
+  clearInterval(timerID);
+}
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -71,6 +107,10 @@ function newGame() {
   newField(shuffle(allCards));
   movesStart();
   newStars();
+  clearTimer();
+  time = 0;
+  timerOff = true;
+  updateTimer()
   matchedCards = [];
 }
 
@@ -83,6 +123,11 @@ deck.addEventListener('click', function(e) {
   && !clickTarget.classList.contains('match')
   && clickTarget.classList.contains('card')
   && !openCards.includes(clickTarget)) {
+    // starting the timer onclick if it's not active already
+    if (timerOff) {
+      startTimer();
+      timerOff = false;
+    }
     clickTarget.classList.toggle('open');
     clickTarget.classList.toggle('show');
    // placing clicked cards in an array to check if they match
@@ -93,9 +138,9 @@ deck.addEventListener('click', function(e) {
     match(openCards);
     //update moves with every two cards clicked
     updateMoves();
-    // checking if a star needs to be romeved based on the num of moves
+    // checking if a star needs to be removed based on the num of moves
     evalMoves();
-  }
+  };
 });
 
 
@@ -119,22 +164,23 @@ function match(array) {
         array.length = 0;
       }, 500);
     };
-  // when last cards are matched there's a bit of time to see what is the last cards
+  // when last cards are matched there's a bit of time to see what is the last card
   // then winning modal appears
   setTimeout(() => {
     win();
   }, 500);
 }
 
-
 // updating moves count on the page
 function updateMoves() {
   moves++;
   movesCount.textContent = moves;
 }
+
 // resetting moves count
 function movesStart() {
-  movesCount.textContent = 0;
+  moves = 0
+  movesCount.textContent = moves;
 }
 
 // evaluating the number of moves to check if removing a star is needed
@@ -151,9 +197,9 @@ function removeStar() {
     if (!star.classList.contains('fa-star-o')) {
       star.classList.toggle('fa-star-o');
       break;
-    }
-  }
-}
+    };
+  };
+};
 
 // setting stars at reload/new game
 function newStars() {
@@ -161,9 +207,9 @@ function newStars() {
   for (star of stars) {
     if (star.classList.contains('fa-star-o')) {
       star.classList.toggle('fa-star-o');
-    }
-  }
-}
+    };
+  };
+};
 
 
 // toggling class to show modal on the page
@@ -178,26 +224,27 @@ const finalMoves = document.querySelector('.final-moves');
 const finalTime = document.querySelector('.final-time');
 function updateModal() {
   finalMoves.textContent = `Moves: ${moves}`;
-  // finalTime.textContent = `Time: ${time}`;
+  timeFormatted(finalTime);
   numStars();
 }
+
 
 // adding events to buttons in the modal
 yesButton = document.querySelector('.yes-again');
 noButton = document.querySelector('.no-again');
-yesButton.addEventListener('click', function(e) {
+yesButton.addEventListener('click', function() {
   showModal();
   newGame();
 });
-noButton.addEventListener('click', function(e) {
+noButton.addEventListener('click', function() {
   showModal();
 });
 
 // evaluating moves for a star rating
 function numStars() {
-    if (moves <= 15) {
+    if (moves <= 14) {
       finalStars.textContent = 'Stars: 3';
-    } else if (moves <= 22) {
+    } else if (moves <= 21) {
       finalStars.textContent = 'Stars: 2';
     } else {
       finalStars.textContent = 'Stars: 1';
@@ -207,6 +254,7 @@ function numStars() {
 // when all the cards are matched, the player wins, the modal appears
 function win() {
   if (matchedCards.length === 16) {
+    clearTimer();
     showModal();
     updateModal();
   };

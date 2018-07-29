@@ -108,6 +108,10 @@ h1 {
     cursor: pointer;
 }
 
+.timer {
+  margin-left: 7px;
+}
+
 .modal-container {
   position: fixed;
   left: 0;
