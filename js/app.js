@@ -23,6 +23,7 @@ movesCount = document.querySelector('.moves');
 let openCards = [];
 let moves = 0;
 let matchedCards = [];
+let timePassed = 0;
 
 /*
  * Display the cards on the page
@@ -41,6 +42,7 @@ button.addEventListener('click', function() {
   newGame();
   alert('New game!');
 });
+
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -81,6 +83,7 @@ function newGame() {
   movesStart();
   newStars();
   matchedCards = [];
+
 }
 
 // showing cards on click
