@@ -1,6 +1,4 @@
-/*
- * Create a list that holds all of your cards
- */
+// an array of all the cards
 let allCards = ['fa-diamond',
   'fa-paper-plane-o',
   'fa-anchor',
@@ -18,23 +16,16 @@ let allCards = ['fa-diamond',
   'fa-bicycle',
   'fa-bomb'
 ];
+
 const deck = document.querySelector('.deck');
 movesCount = document.querySelector('.moves');
 let openCards = [];
 let moves = 0;
 let matchedCards = [];
-let timePassed = 0;
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+let time = 0;
 
 // initializing new game
 newGame();
-
 
 //restarting the game when clicking restart button
 const button = document.querySelector('.fa-repeat')
@@ -42,7 +33,6 @@ button.addEventListener('click', function() {
   newGame();
   alert('New game!');
 });
-
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -68,7 +58,6 @@ function createCard(cardClass) {
   deck.appendChild(newCard);
 };
 
-
 // creating new game field
 function newField(array) {
   for (i = 0; i < array.length; i++) {
@@ -83,7 +72,6 @@ function newGame() {
   movesStart();
   newStars();
   matchedCards = [];
-
 }
 
 // showing cards on click
@@ -103,7 +91,9 @@ deck.addEventListener('click', function(e) {
   // calling match function if array has 2 cards
   if (openCards.length === 2) {
     match(openCards);
+    //update moves with every two cards clicked
     updateMoves();
+    // checking if a star needs to be romeved based on the num of moves
     evalMoves();
   }
 });
@@ -116,8 +106,10 @@ function match(array) {
   && !matchedCards.includes(array[1])) {
     array[0].classList.toggle('match');
     array[1].classList.toggle('match');
+    // pushing matched cards into an array to watch for when the game ends
     matchedCards.push(array[0]);
     matchedCards.push(array[1]);
+    // emptying the openCards array to check other cards
     array.length = 0;
   } else {
     // setTimeout to give a card time to be seen by the user
@@ -127,6 +119,8 @@ function match(array) {
         array.length = 0;
       }, 500);
     };
+  // when last cards are matched there's a bit of time to see what is the last cards
+  // then winning modal appears
   setTimeout(() => {
     win();
   }, 500);
@@ -138,24 +132,24 @@ function updateMoves() {
   moves++;
   movesCount.textContent = moves;
 }
+// resetting moves count
+function movesStart() {
+  movesCount.textContent = 0;
+}
 
-//evaluating the number of moves to check if removing a star is needed
+// evaluating the number of moves to check if removing a star is needed
 function evalMoves() {
   if (moves === 15 || moves === 22) {
     removeStar();
   }
 }
 
-function movesStart() {
-  movesCount.textContent = 0;
-}
-
-// hiding a star at a certain move count
+// reducing a star at a certain move count
 function removeStar() {
   const stars = document.querySelectorAll('.fa-star');
   for (star of stars) {
-    if (star.style.display !== 'none') {
-      star.style.display ='none';
+    if (!star.classList.contains('fa-star-o')) {
+      star.classList.toggle('fa-star-o');
       break;
     }
   }
@@ -165,8 +159,8 @@ function removeStar() {
 function newStars() {
   const stars = document.querySelectorAll('.fa-star');
   for (star of stars) {
-    if (star.style.display == 'none') {
-      star.style.display = null;
+    if (star.classList.contains('fa-star-o')) {
+      star.classList.toggle('fa-star-o');
     }
   }
 }
@@ -179,17 +173,16 @@ function showModal() {
 }
 
 // updating the modal with info
-let finalStars = document.querySelector('.final-stars');
-let finalMoves = document.querySelector('.final-moves');
-let finalTime = document.querySelector('.final-time');
-
+const finalStars = document.querySelector('.final-stars');
+const finalMoves = document.querySelector('.final-moves');
+const finalTime = document.querySelector('.final-time');
 function updateModal() {
   finalMoves.textContent = `Moves: ${moves}`;
   // finalTime.textContent = `Time: ${time}`;
   numStars();
 }
 
-// adding events to buttons
+// adding events to buttons in the modal
 yesButton = document.querySelector('.yes-again');
 noButton = document.querySelector('.no-again');
 yesButton.addEventListener('click', function(e) {
@@ -203,15 +196,15 @@ noButton.addEventListener('click', function(e) {
 // evaluating moves for a star rating
 function numStars() {
     if (moves <= 15) {
-      finalStars.textContent = `Stars: 3`;
+      finalStars.textContent = 'Stars: 3';
     } else if (moves <= 22) {
-      finalStars.textContent = `Stars: 2`;
+      finalStars.textContent = 'Stars: 2';
     } else {
-      finalStars.textContent = `Stars: 1`;
+      finalStars.textContent = 'Stars: 1';
     }
   }
 
-// winning
+// when all the cards are matched, the player wins, the modal appears
 function win() {
   if (matchedCards.length === 16) {
     showModal();
