@@ -128,7 +128,7 @@ function match(array) {
       }, 500);
     };
   setTimeout(() => {
-    win(matchedCards, moves);
+    win();
   }, 500);
 }
 
@@ -171,15 +171,50 @@ function newStars() {
   }
 }
 
-// winning
-function win(array, numMoves) {
-  if (array.length === 16) {
-    if (numMoves <= 15) {
-      alert(`You have won in ${numMoves} moves! That's 3 stars! Awesome!`);
-    } else if (numMoves <= 22) {
-      alert(`You have won in ${numMoves} moves! That's 2 stars! Cool!`);
+
+// toggling class to show modal on the page
+function showModal() {
+  let modal = document.querySelector('.modal-container');
+  modal.classList.toggle('modal-show');
+}
+
+// updating the modal with info
+let finalStars = document.querySelector('.final-stars');
+let finalMoves = document.querySelector('.final-moves');
+let finalTime = document.querySelector('.final-time');
+
+function updateModal() {
+  finalMoves.textContent = `Moves: ${moves}`;
+  // finalTime.textContent = `Time: ${time}`;
+  numStars();
+}
+
+// adding events to buttons
+yesButton = document.querySelector('.yes-again');
+noButton = document.querySelector('.no-again');
+yesButton.addEventListener('click', function(e) {
+  showModal();
+  newGame();
+});
+noButton.addEventListener('click', function(e) {
+  showModal();
+});
+
+// evaluating moves for a star rating
+function numStars() {
+    if (moves <= 15) {
+      finalStars.textContent = `Stars: 3`;
+    } else if (moves <= 22) {
+      finalStars.textContent = `Stars: 2`;
     } else {
-      alert(`You have won in ${numMoves} moves! That's 1 star! Maybe try harder next time?`);
+      finalStars.textContent = `Stars: 1`;
     }
   }
-}
+
+// winning
+function win() {
+  if (matchedCards.length === 16) {
+    showModal();
+    updateModal();
+  };
+};
