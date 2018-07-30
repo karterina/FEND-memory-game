@@ -104,6 +104,7 @@ function newField(array) {
 //creating starting point for the game
 function newGame() {
   deck.innerHTML = '';
+  openCards = [];
   newField(shuffle(allCards));
   movesStart();
   newStars();
